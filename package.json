@@ -1,0 +1,248 @@
+{
+  "name": "ini-table-view",
+  "displayName": "INI Table View",
+  "description": "Opens .ini files (including AudioCodes SBC config INIs) as bordered, aligned tables with clickable section tabs for fast navigation.",
+  "version": "0.5.3",
+  "publisher": "etechtrove",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "ini",
+    "audiocodes",
+    "sbc",
+    "mediant",
+    "table",
+    "viewer",
+    "config"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "iniTableView.editor",
+        "displayName": "INI Table View",
+        "selector": [
+          {
+            "filenamePattern": "*.ini"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "commands": [
+      {
+        "command": "iniTableView.openAsText",
+        "title": "INI: Open as Text",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "iniTableView.openAsTable",
+        "title": "INI: Open as Table",
+        "icon": "$(table)"
+      },
+      {
+        "command": "iniTableView.setAsDefault",
+        "title": "INI: Always Open .ini Files as Tables"
+      },
+      {
+        "command": "iniTableView.unsetDefault",
+        "title": "INI: Stop Opening .ini Files as Tables by Default"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "iniTableView.openAsTable",
+          "when": "resourceExtname == .ini && activeEditor == 'workbench.editors.files.textFileEditor'",
+          "group": "navigation"
+        },
+        {
+          "command": "iniTableView.openAsText",
+          "when": "activeCustomEditorId == 'iniTableView.editor'",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "iniTableView.openAsTable",
+          "when": "resourceExtname == .ini",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "INI Table View",
+      "properties": {
+        "iniTableView.navPosition": {
+          "type": "string",
+          "enum": [
+            "top",
+            "right"
+          ],
+          "default": "top",
+          "description": "Where the section tabs are shown."
+        },
+        "iniTableView.hideEmptySections": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hide sections that contain no rows (AudioCodes INIs have lots of these)."
+        },
+        "iniTableView.navSort": {
+          "type": "string",
+          "enum": [
+            "grouped",
+            "alpha",
+            "file"
+          ],
+          "default": "grouped",
+          "enumDescriptions": [
+            "Key sections first, grouped by colour, then everything else A\u2013Z",
+            "All sections A\u2013Z",
+            "Order they appear in the file"
+          ],
+          "description": "How the section tabs are ordered."
+        },
+        "iniTableView.keyOnly": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show only key sections in the tab panel."
+        },
+        "iniTableView.keySections": {
+          "type": "array",
+          "description": "Key sections, highlighted and grouped in the tab panel. Names are matched case-insensitively against INI section names.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "group": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string"
+              },
+              "sections": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": [
+            {
+              "group": "Routing",
+              "color": "#3b82f6",
+              "sections": [
+                "IPGroup",
+                "IPGroupSet",
+                "IPGroupSetMember",
+                "ProxySet",
+                "ProxyIp",
+                "Account",
+                "IP2IPRouting",
+                "SBCAltRoutingReasonsList",
+                "Classification",
+                "ConditionTable",
+                "CallSetupRules",
+                "DialPlan",
+                "DialPlanRule"
+              ]
+            },
+            {
+              "group": "Manipulation",
+              "color": "#a855f7",
+              "sections": [
+                "MessageManipulations",
+                "PreParsingManipulationSets",
+                "PreParsingManipulationRules",
+                "IPInboundManipulation",
+                "IPOutboundManipulation"
+              ]
+            },
+            {
+              "group": "Network",
+              "color": "#22c55e",
+              "sections": [
+                "InterfaceTable",
+                "SIPInterface",
+                "CpMediaRealm",
+                "RemoteMediaSubnet",
+                "StaticRouteTable",
+                "AccessList",
+                "PhysicalPortsTable",
+                "EtherGroupTable",
+                "DeviceTable"
+              ]
+            },
+            {
+              "group": "Media & Coders",
+              "color": "#f97316",
+              "sections": [
+                "IpProfile",
+                "AudioCoders",
+                "AudioCodersGroups",
+                "AllowedAudioCoders",
+                "AllowedAudioCodersGroups"
+              ]
+            },
+            {
+              "group": "Security & Mgmt",
+              "color": "#ef4444",
+              "sections": [
+                "TLSContexts",
+                "WebUsers",
+                "WEB Params",
+                "WebInterfaces",
+                "SNMP Params",
+                "SNMPUsers",
+                "SNMPTrapDestination",
+                "SNMPTrustedManagers",
+                "NTPInterface",
+                "SyslogServers"
+              ]
+            }
+          ]
+        },
+        "iniTableView.defaultBaseline": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a default/baseline INI (e.g. a factory-default or golden config). When set, every INI is compared against it, highlighting changed, added and removed values. Override per file from the toolbar."
+        },
+        "iniTableView.diffIgnore": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "InterfaceTable",
+            "StaticRouteTable",
+            "DeviceTable",
+            "PhysicalPortsTable",
+            "EtherGroupTable",
+            "SYSTEM Params/HALocalMAC"
+          ],
+          "description": "Excluded from baseline comparison because they are specific to each deployment (e.g. created during the Azure build). Use \"Section\" to skip a whole section, or \"Section/Key\" (key/value sections) and \"Section/Column\" (tables) to skip one item."
+        }
+      }
+    }
+  },
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#1e293b",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abbaswali/ini-table-view.git"
+  },
+  "bugs": {
+    "url": "https://github.com/abbaswali/ini-table-view/issues"
+  },
+  "homepage": "https://github.com/abbaswali/ini-table-view#readme"
+}
